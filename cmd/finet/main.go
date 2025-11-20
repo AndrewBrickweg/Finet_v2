@@ -7,11 +7,12 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/ethanjameslong1/FiNet/cmd/finet/handler"
-	"github.com/ethanjameslong1/FiNet/database"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/AndrewBrickweg/Finet_v2/cmd/finet/handler"
+	"github.com/AndrewBrickweg/Finet_v2/database"
 )
 
 func main() {
@@ -58,6 +59,7 @@ func main() {
 	mux.HandleFunc("POST /login", appHandler.LoginHandler)
 	mux.HandleFunc("GET /login", appHandler.ShowLogin)
 	mux.Handle("GET /homepage", appHandler.AuthMiddleware(http.HandlerFunc(appHandler.HomepageHandler)))
+	mux.Handle("GET /portfolio", http.HandlerFunc(appHandler.PortfolioHandler))
 	mux.Handle("GET /stock", appHandler.AuthMiddleware(http.HandlerFunc(appHandler.StockRequestPageHandler)))
 	mux.Handle("POST /stock", appHandler.AuthMiddleware(http.HandlerFunc(appHandler.StockRequestHandler)))
 	mux.HandleFunc("GET /register", appHandler.ShowRegistration)

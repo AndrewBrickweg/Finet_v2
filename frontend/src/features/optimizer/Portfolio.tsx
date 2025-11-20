@@ -18,6 +18,24 @@ const Portfolio = () => {
     variance: 0,
   });
 
+  const getPortfolioData = async () => {
+    try {
+      const res = await fetch("/finet/portfolio", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch portfolio data");
+      }
+
+      const data = await res.json();
+      console.log("Portfolio data fetched:", data);
+    } catch {
+      console.error("Error fetching portfolio data");
+    }
+  };
+
   const apiKey = import.meta.env.VITE_ALPHA_VANTAGE_API_KEY;
 
   const handleSearch = async (e: React.FormEvent) => {
@@ -66,26 +84,26 @@ const Portfolio = () => {
   //   return () => clearTimeout(timer);
   // }, [query]);
 
-  const createPortfolioData = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  // const createPortfolioData = async (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
 
-    try {
-      const res = await fetch("/finet/analysis", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ tickers: [] }),
-      });
+  //   try {
+  //     const res = await fetch("/finet/analysis", {
+  //       method: "POST",
+  //       headers: { "content-type": "application/json" },
+  //       body: JSON.stringify({ tickers: [] }),
+  //     });
 
-      if (!res.ok) {
-        throw new Error("Failed to fetch portfolio data");
-      }
+  //     if (!res.ok) {
+  //       throw new Error("Failed to fetch portfolio data");
+  //     }
 
-      const data = await res.json();
-      console.log("Portfolio data fetched:", data);
-    } catch {
-      console.error("Error fetching portfolio data");
-    }
-  };
+  //     const data = await res.json();
+  //     console.log("Portfolio data fetched:", data);
+  //   } catch {
+  //     console.error("Error fetching portfolio data");
+  //   }
+  // };
 
   //   handleAddTicker(newTicker);
   // };
@@ -111,13 +129,13 @@ const Portfolio = () => {
             Search for ticker
             {loading ? "..." : ""}
           </button>
-          <button
-            onClick={createPortfolioData}
-            className="bg-red-600 text-white px-4 py-2 rounded-lg" 
-          >
-            Run Portfolio Optimizer
-          </button>
         </form>
+        <button
+          onClick={getPortfolioData}
+          className="bg-red-600 text-white px-4 py-2 rounded-lg"
+        >
+          Run Portfolio Optimizer
+        </button>
 
         {error && (
           <p className="text-red-500 mt-2 text-sm font-medium">{error}</p>
