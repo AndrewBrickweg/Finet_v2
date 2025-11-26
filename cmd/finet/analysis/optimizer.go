@@ -1,9 +1,9 @@
-
 package analysis
 
 //monte carlo portfolio optimization for now, implement QP solver later
 import (
 	"errors"
+	"fmt"
 	"math"
 	"math/rand"
 	"time"
@@ -135,6 +135,7 @@ func generateWeightConstraints(tickers []string, minWeight, maxWeight float64, r
 
 // consider goroutine parallelism later.
 func OptimizePortfolio(returns map[string][]float64, numPortfolios int, riskFreeRate float64, minWeight float64, maxWeight float64) ([]Portfolio, Portfolio) {
+	fmt.Println("DEBUG: OptimizePortfolio called")
     var bestPortfolio Portfolio
     bestPortfolio.Sharpe = math.Inf(-1)
 

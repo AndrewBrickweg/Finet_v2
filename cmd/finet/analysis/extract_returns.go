@@ -21,7 +21,6 @@ func ExtractMonthlyAdjClosePrices(data []*StockDataMonthly) map[string][]float64
 			dates = append(dates, date)
 		}
 		sort.Strings(dates)
-		//TODO check if this is needed, for performance reasons. //sorted dates are needed to ensure chronological order for calculations
 
 		// Collect close prices in chronological order
 		var prices []float64
@@ -35,7 +34,6 @@ func ExtractMonthlyAdjClosePrices(data []*StockDataMonthly) map[string][]float64
 			prices = append(prices, closeVal) // Append to prices slice
 		}
 		adjClosePrices[stock.MetaData.Symbol] = prices // Store in map
-		//TODO should probably make sure date is somehow available from the map, maybe making a small struct? // dates are inherently available because they are sorted, shouldnt be needed.
 	}		
 
 	return adjClosePrices

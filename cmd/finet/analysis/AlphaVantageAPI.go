@@ -2,6 +2,8 @@ package analysis
 
 //imports... obvi
 //checking github correctness
+
+//Written by Ethan Long
 import (
 	"context"
 	"encoding/json"
@@ -15,7 +17,7 @@ import (
 
 // global constants
 const (
-	ApiKey                  = "FTMAJAOUIWD2Z7L9"
+	ApiKey                  = "QE75UD8K5T3GFRB5"
 	ApiURL                  = "https://www.alphavantage.co/query?function=%v&symbol=%v&apikey=%v"
 	WeeklyAdjustedFunction  = "TIME_SERIES_WEEKLY_ADJUSTED"
 	MonthlyAdjustedFunction = "TIME_SERIES_MONTHLY_ADJUSTED"
@@ -146,6 +148,8 @@ func MakeWeeklyDataSlice(ctx context.Context, symbols []string) ([]*StockDataWee
 	return dataSlice, nil
 }
 
+
+//Written by Andrew Brickweg
 func RetrieveStockDataMonthly(ctx context.Context, params AlphaVantageParam) (*StockDataMonthly, error) {
 	if params.Function != MonthlyAdjustedFunction || params.Symbol == "" || params.APIKey == "" {
 		return nil, fmt.Errorf("Required params are missing or wrong")

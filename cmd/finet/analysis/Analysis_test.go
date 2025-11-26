@@ -1,7 +1,7 @@
 package analysis_test
 
 import (
-	"github.com/AndrewBrickweg/Finet_v2/cmd/stock/analysis"
+	"github.com/AndrewBrickweg/Finet_v2/cmd/finet/analysis"
 
 	"testing"
 )
