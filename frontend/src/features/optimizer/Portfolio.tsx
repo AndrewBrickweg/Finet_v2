@@ -21,8 +21,9 @@ const Portfolio = () => {
   const getPortfolioData = async () => {
     try {
       const res = await fetch("/finet/portfolio", {
-        method: "GET",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tickers }),
       });
 
       if (!res.ok) {

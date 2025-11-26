@@ -23,7 +23,14 @@ func main() {
 		log.Fatal(err)
 	}
 	defer servUSDB.Close()
-	servStockDB, err := database.NewDBService(ctx, database.StockDataSource)
+	
+	// servStockPredictionsDB, err := database.NewDBService(ctx, database.StockPredictionsDataSource)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// defer servStockDB.Close()
+
+	servStockDB, err := database.NewStockDB(ctx, database.StockDataSource)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -57,21 +64,23 @@ func main() {
 	mux := http.NewServeMux()
 	mux.Handle("/", appHandler.AuthMiddleware(http.HandlerFunc(appHandler.RootHandler)))
 	mux.HandleFunc("POST /login", appHandler.LoginHandler)
-	mux.HandleFunc("GET /login", appHandler.ShowLogin)
-	mux.Handle("GET /homepage", appHandler.AuthMiddleware(http.HandlerFunc(appHandler.HomepageHandler)))
-	mux.Handle("GET /portfolio", http.HandlerFunc(appHandler.PortfolioHandler))
-	mux.Handle("GET /stock", appHandler.AuthMiddleware(http.HandlerFunc(appHandler.StockRequestPageHandler)))
-	mux.Handle("POST /stock", appHandler.AuthMiddleware(http.HandlerFunc(appHandler.StockRequestHandler)))
-	mux.HandleFunc("GET /register", appHandler.ShowRegistration)
+
+	mux.Handle("POST /portfolio", http.HandlerFunc(appHandler.PortfolioHandler))
 	mux.HandleFunc("POST /register", appHandler.RegistrationHandler)
-	mux.Handle("GET /predictions", appHandler.AuthMiddleware(http.HandlerFunc(appHandler.ShowPredictionsHandler)))
-	mux.Handle("GET /rawdata", appHandler.AuthMiddleware(http.HandlerFunc(appHandler.RawDataRequest)))
-	mux.Handle("POST /rawdata", appHandler.AuthMiddleware(http.HandlerFunc(appHandler.RawDataHandler)))
 	mux.HandleFunc("GET /logout", appHandler.LogoutHandler)
 
+	// mux.Handle("GET /homepage", appHandler.AuthMiddleware(http.HandlerFunc(appHandler.HomepageHandler)))
+	// mux.HandleFunc("GET /login", appHandler.ShowLogin)
+	// mux.Handle("GET /stock", appHandler.AuthMiddleware(http.HandlerFunc(appHandler.StockRequestPageHandler)))
+	// mux.Handle("POST /stock", appHandler.AuthMiddleware(http.HandlerFunc(appHandler.StockRequestHandler)))
+	// mux.HandleFunc("GET /register", appHandler.ShowRegistration)
+	// mux.Handle("GET /predictions", appHandler.AuthMiddleware(http.HandlerFunc(appHandler.ShowPredictionsHandler)))
+	// mux.Handle("GET /rawdata", appHandler.AuthMiddleware(http.HandlerFunc(appHandler.RawDataRequest)))
+	// mux.Handle("POST /rawdata", appHandler.AuthMiddleware(http.HandlerFunc(appHandler.RawDataHandler)))
+
 	//TEST this is just to ensure that once nginx is in place we can properly move analysis logic over. Functions are in loginhandler.go, just change the struct there to test whatever
-	mux.HandleFunc("GET /testapi", appHandler.TESTAPISTOCK)
-	mux.HandleFunc("POST /itemtest", appHandler.TESTAPISTOCKhandle)
+	// mux.HandleFunc("GET /testapi", appHandler.TESTAPISTOCK)
+	// mux.HandleFunc("POST /itemtest", appHandler.TESTAPISTOCKhandle)
 
 	fmt.Printf("port running on localhost:8000/\n")
 	if err := http.ListenAndServe(":8000", mux); err != nil {

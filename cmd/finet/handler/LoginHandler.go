@@ -1,16 +1,15 @@
 package handler
 
 import (
-	"bytes"
+	// "bytes"
 	"database/sql"
 	"encoding/json"
 	"errors"
 	"log"
 	"net/http"
 	"strings"
-	"text/template"
+	// "text/template"
 	"time"
-
 	"github.com/AndrewBrickweg/Finet_v2/database"
 	"github.com/google/uuid"
 )
@@ -26,109 +25,109 @@ type UserLoginData struct {
 
 type Handler struct {
 	UserSessionDBService *database.DBService
-	StockDBService       *database.DBService
+	StockDBService       *database.StockDB
 	SessionDuration      time.Duration
 }
 
 // TEST FUNCTIONS *****************************************************************************
-func (h *Handler) TESTAPISTOCK(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("static/AAAstockAPITest.html")
-	if err != nil {
-		log.Printf("Error parsing login template: %v", err)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
-	err = tmpl.Execute(w, PageData{})
-	if err != nil {
-		log.Printf("Error executing login template: %v", err)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
-}
+// func (h *Handler) TESTAPISTOCK(w http.ResponseWriter, r *http.Request) {
+// 	tmpl, err := template.ParseFiles("static/AAAstockAPITest.html")
+// 	if err != nil {
+// 		log.Printf("Error parsing login template: %v", err)
+// 		http.Error(w, "Internal server error", http.StatusInternalServerError)
+// 		return
+// 	}
+// 	err = tmpl.Execute(w, PageData{})
+// 	if err != nil {
+// 		log.Printf("Error executing login template: %v", err)
+// 		http.Error(w, "Internal server error", http.StatusInternalServerError)
+// 		return
+// 	}
+// }
 
-type testItem struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
-}
+// type testItem struct {
+// 	ID   int    `json:"id"`
+// 	Name string `json:"name"`
+// }
 
-var stockAPIURL = "http://stock_analysis:9090/item"
+// var stockAPIURL = "http://stock_analysis:9090/item"
 
-func (h *Handler) TESTAPISTOCKhandle(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	var newItem testItem
-	err := json.NewDecoder(r.Body).Decode(&newItem)
-	if err != nil {
-		http.Error(w, "Invalid body", http.StatusBadRequest)
-		return
-	}
-	log.Printf("Success frontend received ID=%d, Name=%s. Sending to stock.go", newItem.ID, newItem.Name)
+// func (h *Handler) TESTAPISTOCKhandle(w http.ResponseWriter, r *http.Request) {
+// 	defer r.Body.Close()
+// 	var newItem testItem
+// 	err := json.NewDecoder(r.Body).Decode(&newItem)
+// 	if err != nil {
+// 		http.Error(w, "Invalid body", http.StatusBadRequest)
+// 		return
+// 	}
+// 	log.Printf("Success frontend received ID=%d, Name=%s. Sending to stock.go", newItem.ID, newItem.Name)
 
-	jsonData, err := json.Marshal(newItem)
-	if err != nil {
-		http.Error(w, "Failed to prepare data for stock API call", http.StatusInternalServerError)
-		return
-	}
-	req, err := http.NewRequest("POST", stockAPIURL, bytes.NewBuffer(jsonData))
-	if err != nil {
-		http.Error(w, "Failed to create request for stock API", http.StatusInternalServerError)
-		return
-	}
-	req.Header.Set("Content-Type", "application/json")
-	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Do(req)
-	if err != nil {
-		http.Error(w, "failed to reach the stock API", http.StatusServiceUnavailable)
-		return
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusCreated {
-		log.Printf("STock API returned an error: %s", resp.Status)
-		http.Error(w, "Stock API failed to process the item", resp.StatusCode)
-		return
-	}
-	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte("Successfully created item in stock service."))
-	log.Println("Successfully forwarded item to stock API.")
-}
+// 	jsonData, err := json.Marshal(newItem)
+// 	if err != nil {
+// 		http.Error(w, "Failed to prepare data for stock API call", http.StatusInternalServerError)
+// 		return
+// 	}
+// 	req, err := http.NewRequest("POST", stockAPIURL, bytes.NewBuffer(jsonData))
+// 	if err != nil {
+// 		http.Error(w, "Failed to create request for stock API", http.StatusInternalServerError)
+// 		return
+// 	}
+// 	req.Header.Set("Content-Type", "application/json")
+// 	client := &http.Client{Timeout: 10 * time.Second}
+// 	resp, err := client.Do(req)
+// 	if err != nil {
+// 		http.Error(w, "failed to reach the stock API", http.StatusServiceUnavailable)
+// 		return
+// 	}
+// 	defer resp.Body.Close()
+// 	if resp.StatusCode != http.StatusCreated {
+// 		log.Printf("STock API returned an error: %s", resp.Status)
+// 		http.Error(w, "Stock API failed to process the item", resp.StatusCode)
+// 		return
+// 	}
+// 	w.WriteHeader(http.StatusCreated)
+// 	w.Write([]byte("Successfully created item in stock service."))
+// 	log.Println("Successfully forwarded item to stock API.")
+// }
 
 // TEST FUNCTIONS *****************************************************************************
 
-func NewHandler(UserSessionDB *database.DBService, StockDB *database.DBService, sessionDuration time.Duration) (*Handler, error) {
+func NewHandler(UserSessionDB *database.DBService,  StockDBService *database.StockDB, sessionDuration time.Duration) (*Handler, error) {
 	if UserSessionDB == nil {
 		return nil, errors.New("database services cannot be nil")
 	}
-	if StockDB == nil {
+	if StockDBService == nil {
 		return nil, errors.New("database services cannot be nil")
 	}
 
 	return &Handler{
 		UserSessionDBService: UserSessionDB,
-		StockDBService:       StockDB,
+		StockDBService:       StockDBService,
 		SessionDuration:      sessionDuration,
 	}, nil
 }
 
-func (h *Handler) ShowLogin(w http.ResponseWriter, r *http.Request) {
+// func (h *Handler) ShowLogin(w http.ResponseWriter, r *http.Request) {
 
-	_, ok := r.Context().Value(userContextKey).(database.User)
-	if ok {
-		http.Redirect(w, r, "/finet/stock", http.StatusSeeOther)
-		return
-	}
+// 	_, ok := r.Context().Value(userContextKey).(database.User)
+// 	if ok {
+// 		http.Redirect(w, r, "/finet/stock", http.StatusSeeOther)
+// 		return
+// 	}
 
-	tmpl, err := template.ParseFiles("static/login.html")
-	if err != nil {
-		log.Printf("Error parsing login template: %v", err)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
-	err = tmpl.Execute(w, PageData{})
-	if err != nil {
-		log.Printf("Error executing login template: %v", err)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
-}
+// 	tmpl, err := template.ParseFiles("static/login.html")
+// 	if err != nil {
+// 		log.Printf("Error parsing login template: %v", err)
+// 		http.Error(w, "Internal server error", http.StatusInternalServerError)
+// 		return
+// 	}
+// 	err = tmpl.Execute(w, nil)
+// 	if err != nil {
+// 		log.Printf("Error executing login template: %v", err)
+// 		http.Error(w, "Internal server error", http.StatusInternalServerError)
+// 		return
+// 	}
+// }
 
 func (h *Handler) LoginHandler(w http.ResponseWriter, r *http.Request) {
     if r.Method != http.MethodPost {
@@ -194,27 +193,27 @@ func (h *Handler) LoginHandler(w http.ResponseWriter, r *http.Request) {
     })
 }
 
-func (h *Handler) ShowRegistration(w http.ResponseWriter, r *http.Request) {
+// func (h *Handler) ShowRegistration(w http.ResponseWriter, r *http.Request) {
 
-	_, ok := r.Context().Value(userContextKey).(database.User)
-	if ok {
-		http.Redirect(w, r, "/finet/stock", http.StatusSeeOther)
-		return
-	}
+// 	_, ok := r.Context().Value(userContextKey).(database.User)
+// 	if ok {
+// 		http.Redirect(w, r, "/finet/stock", http.StatusSeeOther)
+// 		return
+// 	}
 
-	tmpl, err := template.ParseFiles("static/registration.html")
-	if err != nil {
-		log.Printf("Error parsing registration template: %v", err)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
-	err = tmpl.Execute(w, PageData{})
-	if err != nil {
-		log.Printf("Error executing registration template: %v", err)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
-}
+// 	tmpl, err := template.ParseFiles("static/registration.html")
+// 	if err != nil {
+// 		log.Printf("Error parsing registration template: %v", err)
+// 		http.Error(w, "Internal server error", http.StatusInternalServerError)
+// 		return
+// 	}
+// 	err = tmpl.Execute(w,)
+// 	if err != nil {
+// 		log.Printf("Error executing registration template: %v", err)
+// 		http.Error(w, "Internal server error", http.StatusInternalServerError)
+// 		return
+// 	}
+// }
 
 func (h *Handler) RegistrationHandler(w http.ResponseWriter, r *http.Request) {
     if r.Method != http.MethodPost {

@@ -44,6 +44,7 @@ type User struct {
 const (
 	DriverName            string = "mysql"
 	UserSessionDataSource string = "root:Front2Back!@tcp(user_session_db:3306)/user_session_db?parseTime=true"
+	StockDataSource   string = "root:Front2Back!@tcp(stock_data_db:3306)/stock_data_db?parseTime=true"
 	CONNECTIONS           int    = 50
 )
 

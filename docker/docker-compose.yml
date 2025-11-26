@@ -12,6 +12,20 @@ services:
       - app_network
     restart: always
 
+  stock_data_db:
+    image: mysql:8.0
+    container_name: stock_data_db
+    environment:
+      MYSQL_DATABASE: stock_data_db
+      MYSQL_ROOT_PASSWORD: Front2Back!
+
+    volumes:
+      - ./stock_data/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - stock_data:/var/lib/mysql
+    networks:
+      - app_network
+    restart: always
+
   stock_prediction_db:
     image: mysql:8.0
     container_name: stock_prediction_db
@@ -41,12 +55,18 @@ services:
       DB_STOCK_PREDICTION_HOST: stock_prediction_db
       DB_STOCK_PREDICTION_PORT: 3306
       DB_STOCK_PREDICTION_NAME: stock_prediction_db
+
+      DB_STOCK_DATA_HOST: stock_data_db
+      DB_STOCK_DATA_PORT: 3306
+      DB_STOCK_DATA_NAME: stock_data_db
     networks:
       - app_network
     depends_on:
       user_session_db:
         condition: service_started
       stock_prediction_db:
+        condition: service_started
+      stock_data_db:
         condition: service_started
     restart: always
 
@@ -61,31 +81,12 @@ services:
       - app_network
     depends_on:
       - finet
-      - stock
     restart: always
-
-  stock:
-    build:
-      context: ..
-      dockerfile: ./cmd/stock/dockerfile/stockDockerfile
-    container_name: stock_analysis
-    expose:
-      - "8001"
-    environment:
-      DB_STOCK_PREDICTION_HOST: stock_prediction_db
-      DB_STOCK_PREDICTION_PORT: 3306
-      DB_STOCK_PREDICTION_NAME: stock_prediction_db
-    networks:
-      - app_network
-    depends_on:
-      user_session_db:
-        condition: service_started
-      stock_prediction_db:
-        condition: service_started
 
 volumes:
   user_session_data:
   stock_prediction_data:
+  stock_data:
 
 networks:
   app_network:
