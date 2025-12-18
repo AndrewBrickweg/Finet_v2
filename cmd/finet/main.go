@@ -1,7 +1,3 @@
-// FileSearchServer.go
-
-//testing git authentication
-
 package main
 
 import (
@@ -18,19 +14,19 @@ import (
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	servUSDB, err := database.NewDBService(ctx, database.UserSessionDataSource)
+	servUSDB, err := database.NewDBService(ctx, database.UserSessionDataSource())
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer servUSDB.Close()
-	
+
 	// servStockPredictionsDB, err := database.NewDBService(ctx, database.StockPredictionsDataSource)
 	// if err != nil {
 	// 	log.Fatal(err)
 	// }
 	// defer servStockDB.Close()
 
-	servStockDB, err := database.NewStockDB(ctx, database.StockDataSource)
+	servStockDB, err := database.NewStockDB(ctx, database.StockDataSource())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -64,7 +60,6 @@ func main() {
 	mux := http.NewServeMux()
 	mux.Handle("/", appHandler.AuthMiddleware(http.HandlerFunc(appHandler.RootHandler)))
 	mux.HandleFunc("POST /login", appHandler.LoginHandler)
-
 	mux.Handle("POST /portfolio", http.HandlerFunc(appHandler.PortfolioHandler))
 	mux.HandleFunc("POST /register", appHandler.RegistrationHandler)
 	mux.HandleFunc("GET /logout", appHandler.LogoutHandler)
