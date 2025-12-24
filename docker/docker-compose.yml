@@ -5,6 +5,8 @@ services:
     environment:
       MYSQL_DATABASE: user_session_db
       MYSQL_ROOT_PASSWORD: Front2Back!
+      MYSQL_USER: finet_app
+      MYSQL_PASSWORD: finet_password
     volumes:
       - ./user_session_db/init.sql:/docker-entrypoint-initdb.d/init.sql
       - user_session_data:/var/lib/mysql
@@ -15,29 +17,15 @@ services:
   stock_data_db:
     image: mysql:8.0
     container_name: stock_data_db
-    ports:
-      - "3307:3306"
     environment:
       MYSQL_DATABASE: stock_data_db
       MYSQL_ROOT_PASSWORD: Front2Back!
+      MYSQL_USER: finet_app
+      MYSQL_PASSWORD: finet_password
 
     volumes:
       - ./stock_data_db/init.sql:/docker-entrypoint-initdb.d/init.sql
       - stock_data:/var/lib/mysql
-    networks:
-      - app_network
-    restart: always
-
-  stock_prediction_db:
-    image: mysql:8.0
-    container_name: stock_prediction_db
-    environment:
-      MYSQL_DATABASE: stock_prediction_db
-      MYSQL_ROOT_PASSWORD: Front2Back!
-
-    volumes:
-      - ./stock_prediction_db/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - stock_prediction_data:/var/lib/mysql
     networks:
       - app_network
     restart: always
@@ -50,23 +38,22 @@ services:
     ports:
       - "8000:8000"
     environment:
+      COOKIE_SECURE: "false"
       DB_USER_SESSION_HOST: user_session_db
       DB_USER_SESSION_PORT: 3306
       DB_USER_SESSION_NAME: user_session_db
-
-      DB_STOCK_PREDICTION_HOST: stock_prediction_db
-      DB_STOCK_PREDICTION_PORT: 3306
-      DB_STOCK_PREDICTION_NAME: stock_prediction_db
+      DB_USER_SESSION_USER: finet_app
+      DB_USER_SESSION_PASSWORD: finet_password
 
       DB_STOCK_DATA_HOST: stock_data_db
       DB_STOCK_DATA_PORT: 3306
       DB_STOCK_DATA_NAME: stock_data_db
+      DB_STOCK_DATA_USER: finet_app
+      DB_STOCK_DATA_PASSWORD: finet_password
     networks:
       - app_network
     depends_on:
       user_session_db:
-        condition: service_started
-      stock_prediction_db:
         condition: service_started
       stock_data_db:
         condition: service_started
@@ -75,7 +62,7 @@ services:
   frontend:
     build:
       context: ../frontend
-      dockerfile: Dockerfile
+      dockerfile: ./dockerfile
     container_name: frontend
     ports:
       - "8080:80"
@@ -87,7 +74,6 @@ services:
 
 volumes:
   user_session_data:
-  stock_prediction_data:
   stock_data:
 
 networks:

@@ -91,8 +91,8 @@ func mustEnv(key, fallback string) string {
 func userSessionDSN() string {
 	host := mustEnv("DB_USER_SESSION_HOST", "user_session_db")
 	port := mustEnv("DB_USER_SESSION_PORT", "3306")
-	user := mustEnv("DB_USER_SESSION_USER", "root")
-	pass := mustEnv("DB_USER_SESSION_PASSWORD", "Front2Back!")
+	user := mustEnv("DB_USER_SESSION_USER", "finet_app")
+	pass := mustEnv("DB_USER_SESSION_PASSWORD", "finet_password")
 	name := mustEnv("DB_USER_SESSION_NAME", "user_session_db")
 	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", user, pass, host, port, name)
 }
@@ -100,8 +100,8 @@ func userSessionDSN() string {
 func stockDataDSN() string {
 	host := mustEnv("DB_STOCK_DATA_HOST", "stock_data_db")
 	port := mustEnv("DB_STOCK_DATA_PORT", "3306")
-	user := mustEnv("DB_STOCK_DATA_USER", "root")
-	pass := mustEnv("DB_STOCK_DATA_PASSWORD", "Front2Back!")
+	user := mustEnv("DB_STOCK_DATA_USER", "finet_app")
+	pass := mustEnv("DB_STOCK_DATA_PASSWORD", "finet_password")
 	name := mustEnv("DB_STOCK_DATA_NAME", "stock_data_db")
 	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", user, pass, host, port, name)
 }
