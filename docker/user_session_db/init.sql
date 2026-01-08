@@ -1,3 +1,10 @@
+CREATE DATABASE IF NOT EXISTS user_session_db;
+USE user_session_db;
+
+CREATE USER IF NOT EXISTS 'finet_app'@'%' IDENTIFIED BY 'finet_password';
+GRANT ALL PRIVILEGES ON user_session_db.* TO 'finet_app'@'%';
+FLUSH PRIVILEGES;
+
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) UNIQUE NOT NULL,

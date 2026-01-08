@@ -4,7 +4,7 @@ services:
     container_name: user_session_db
     environment:
       MYSQL_DATABASE: user_session_db
-      MYSQL_ROOT_PASSWORD: Front2Back!
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_USER: finet_app
       MYSQL_PASSWORD: finet_password
     volumes:
@@ -13,22 +13,41 @@ services:
     networks:
       - app_network
     restart: always
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mysqladmin ping --protocol=tcp -h 127.0.0.1 -uroot -p$MYSQL_ROOT_PASSWORD --silent",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 60
+      start_period: 60s
 
   stock_data_db:
     image: mysql:8.0
     container_name: stock_data_db
     environment:
       MYSQL_DATABASE: stock_data_db
-      MYSQL_ROOT_PASSWORD: Front2Back!
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_USER: finet_app
       MYSQL_PASSWORD: finet_password
-
     volumes:
       - ./stock_data_db/init.sql:/docker-entrypoint-initdb.d/init.sql
       - stock_data:/var/lib/mysql
     networks:
       - app_network
     restart: always
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mysqladmin ping --protocol=tcp -h 127.0.0.1 -uroot -p$MYSQL_ROOT_PASSWORD --silent",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 60
+      start_period: 60s
 
   finet:
     build:
@@ -54,9 +73,9 @@ services:
       - app_network
     depends_on:
       user_session_db:
-        condition: service_started
+        condition: service_healthy
       stock_data_db:
-        condition: service_started
+        condition: service_healthy
     restart: always
 
   frontend:
@@ -65,7 +84,7 @@ services:
       dockerfile: ./dockerfile
     container_name: frontend
     ports:
-      - "8080:80"
+      - "80:80"
     networks:
       - app_network
     depends_on:
